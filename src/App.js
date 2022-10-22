@@ -7,8 +7,8 @@ function App() {
   return (
     <div className="body">
       <div className="App">
-        <Heading color="white" mb="3" fontSize="3xl">
-          Add a Thing To Do!
+        <Heading className="animatext" color="white" mb="3" fontSize="3xl">
+          Add a thing to do!
         </Heading>
         <Container size="2xl">
           <Flex

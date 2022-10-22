@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTodos } from "../context/TodoContext";
 import {
   Button,
@@ -15,13 +15,15 @@ import {
   PopoverFooter,
   PopoverCloseButton,
   Portal,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
+  Input,
 } from "@chakra-ui/react";
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon, InfoIcon } from "@chakra-ui/icons";
 const TodoArea = () => {
+  const [indexEdit, setIndexEdit] = useState({
+    value: "",
+    index: "",
+  });
+
   const {
     indexItem,
     setIndexItem,
@@ -29,6 +31,9 @@ const TodoArea = () => {
     controlLocal,
     setControlLocal,
     setControldelete,
+    setEditItems,
+
+    setEditControl,
   } = useTodos();
   const toast = useToast();
   const initRef = useRef();
@@ -59,6 +64,15 @@ const TodoArea = () => {
     onClose();
   };
 
+  const handleEditSubmit = (onClose) => {
+    setEditItems({
+      value: indexEdit.value,
+      index: indexEdit.index,
+    });
+    setEditControl(true);
+    onClose();
+  };
+
   return (
     <>
       <Container pb="10" mt="5" size="lg">
@@ -85,7 +99,7 @@ const TodoArea = () => {
                       <PopoverHeader>Are You Sure?</PopoverHeader>
                       <PopoverCloseButton />
                       <PopoverBody>
-                        <Box>Are you sure to delete all todos mf* ?</Box>
+                        <Box>Are you sure to delete all todos?</Box>
                       </PopoverBody>
                       <PopoverFooter>
                         <Button
@@ -124,8 +138,53 @@ const TodoArea = () => {
                 <Text>{i}</Text>
               </Box>
               <Box>
-                <EditIcon mr="2" cursor="pointer" color="green" />
+                {/* Edit  */}
 
+                <Popover
+                  closeOnBlur={false}
+                  placement="bottom"
+                  initialFocusRef={initRef}
+                >
+                  {({ onClose }) => (
+                    <>
+                      <PopoverTrigger>
+                        <EditIcon mr="2" cursor="pointer" color="green" />
+                      </PopoverTrigger>
+                      <Portal>
+                        <PopoverContent>
+                          <PopoverHeader>Edit To do!</PopoverHeader>
+                          <PopoverCloseButton />
+
+                          <PopoverBody>
+                            <Input
+                              defaultValue={i}
+                              onChange={({ target }) => {
+                                setIndexEdit({
+                                  value: target.value,
+                                  index: index,
+                                });
+                              }}
+                            />
+                          </PopoverBody>
+                          <PopoverFooter>
+                            <Button
+                              mr="2"
+                              size="sm"
+                              onClick={() => handleEditSubmit(onClose)}
+                              colorScheme="green"
+                            >
+                              Edit
+                            </Button>
+                            <Button size="sm" onClick={onClose}>
+                              Close
+                            </Button>
+                          </PopoverFooter>
+                        </PopoverContent>
+                      </Portal>
+                    </>
+                  )}
+                </Popover>
+                {/* Delete */}
                 <Popover
                   closeOnBlur={false}
                   placement="bottom"
@@ -141,7 +200,7 @@ const TodoArea = () => {
                           <PopoverHeader>Are You Sure?</PopoverHeader>
                           <PopoverCloseButton />
                           <PopoverBody>
-                            <Box>Are you sure to delete this to do mf* ?</Box>
+                            <Box>Are you sure to delete this to do ?</Box>
                           </PopoverBody>
                           <PopoverFooter>
                             <Button
@@ -165,25 +224,22 @@ const TodoArea = () => {
             </Flex>
           ))
         ) : (
-          <Alert
-            status="warning"
-            variant="subtle"
-            flexDirection="column"
+          <Flex
             alignItems="center"
             justifyContent="center"
             textAlign="center"
-            height="200px"
+            height="100px"
             borderRadius="15px"
             mt="10"
+            boxShadow="base"
+            p="2"
+            rounded="md"
           >
-            <AlertIcon boxSize="40px" mr={0} />
-            <AlertTitle mt={4} mb={1} fontSize="lg">
-              There are no Todos!
-            </AlertTitle>
-            <AlertDescription maxWidth="sm">
-              Please add a todo!
-            </AlertDescription>
-          </Alert>
+            <InfoIcon color="grey" boxSize="20px" mr={4} />
+            <Text fontSize="20px" color="grey.700">
+              There is no "to do" to show!
+            </Text>
+          </Flex>
         )}
       </Container>
     </>

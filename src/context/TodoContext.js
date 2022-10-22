@@ -7,13 +7,17 @@ export const TodoProvider = ({ children }) => {
   const [controlLocal, setControlLocal] = useState(false);
   const [controldelete, setControldelete] = useState(false);
   const [indexItem, setIndexItem] = useState(-1);
+  const [editItems, setEditItems] = useState({
+    value: "",
+    index: "",
+  });
+  const [editControl, setEditControl] = useState(false);
   const local = JSON.parse(localStorage.getItem("todos"));
 
   useEffect(() => {
     if (local === null) {
       localStorage.setItem("todos", JSON.stringify([]));
     } else if (todo === "") {
-      console.log(" doldurunuz");
     } else {
       local.push(todo);
       localStorage.setItem("todos", JSON.stringify(local));
@@ -24,9 +28,24 @@ export const TodoProvider = ({ children }) => {
       setControldelete(false);
     }
     setTodo("");
-
-    console.log(local);
-  }, [todo, local, indexItem, controldelete, setControldelete]);
+    if (editItems.value !== "") {
+      local[editItems.index] = editItems.value;
+      localStorage.setItem("todos", JSON.stringify(local));
+      setEditItems({
+        value: "",
+        index: "",
+      });
+      setEditControl(false);
+    }
+  }, [
+    todo,
+    local,
+    indexItem,
+    controldelete,
+    setControldelete,
+    editItems,
+    setEditControl,
+  ]);
 
   const values = {
     todo,
@@ -38,6 +57,10 @@ export const TodoProvider = ({ children }) => {
     setIndexItem,
     controldelete,
     setControldelete,
+    editItems,
+    setEditItems,
+    editControl,
+    setEditControl,
   };
 
   return <TodoContext.Provider value={values}>{children}</TodoContext.Provider>;
